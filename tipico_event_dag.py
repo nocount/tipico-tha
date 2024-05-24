@@ -1,13 +1,15 @@
-from datetime import datetime, timedelta
-import requests
 import json
+from datetime import datetime, timedelta
+
 import pandas as pd
+import pandas_redshift as pr
+import requests
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 
 # Define default arguments for the DAG
 default_args = {
-    'owner': 'your_name',
+    'owner': 'wburchenal',
     'depends_on_past': False,
     'start_date': datetime(2024, 5, 21),
     'email_on_failure': False,
@@ -32,19 +34,37 @@ def call_and_store_api_data(**context):
 
         # Convert the data to a Pandas DataFrame
         df = pd.DataFrame(data)
+        # Rename group column to groups as group is a reserved word in Redshift
+        df = df.rename(columns={"group": "groups"})
 
-        # Store the data (e.g., to a local file or database)
-        df.to_csv('api_data.csv', index=False)
+        # Establish Redshift connection
+        pr.connect_to_redshift(
+            'dev',
+            host='<host>',
+            port='5439',
+            user='<user>',
+            password='<password>'
+        )
 
-        # Log a message
-        print(f"API data stored successfully at {datetime.now()}")
+        # Connect to S3
+        pr.connect_to_s3(
+            aws_access_key_id='<S3 access key>',
+            aws_secret_access_key='<S3 secret>',
+            bucket='tipico-events-raw',
+            subdirectory='raw_data'
+        )
+
+        # Write the DataFrame to S3 and then to redshift
+        pr.pandas_to_redshift(data_frame=df, redshift_table_name='dbt_wburchenal.tipico_events_raw', index=False,
+                              append=True)
+
+        print(f"API data stored in Redshift successfully at {datetime.now()}")
     else:
-        # Log an error message
         print(f"Failed to call the API. Status code: {response.status_code}")
 
 
 # Create the DAG
-with DAG('tipico_api_dag', default_args=default_args, schedule_interval=timedelta(minutes=10)) as dag:
+with DAG('tipico_event_dag', default_args=default_args, schedule_interval=timedelta(minutes=10)) as dag:
     # Define the task to call the API and store the data
     call_and_store_task = PythonOperator(
         task_id='call_and_store_api_data',
