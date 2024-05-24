@@ -3,14 +3,17 @@ Three part take home assignment for Tipico interview process
 
 # Project Description
 
-## Task 1 - Airflow DAG:
+## Task 1 - Airflow DAG:  
+The first task was to create a DAG in Airflow that queried a given API and stored that data to a database of our choosing, Redshift in my case.
 
-The dag(tipico_event_dag.py) performs the api query and then writes to Redshift using the pandas_redshift library(pandas to_sql was also considered but I ran into some tricky engine issues connecting to my Redshift instance).  
+The dag(tipico_event_dag.py in src dir) performs the api query and then writes to Redshift using the pandas_redshift library(pandas to_sql was also considered but I ran into some tricky engine issues connecting to my Redshift instance).  
 
 Dag can be edited with S3/Redshift credentials then put into the dags directory of a running airflow app then activated and it should run every 10 minutes and upload to the Redshift cluster.  
+
 [Serverless Redshift](docs/redshift_env.PNG)
 
 Tested on aiflow server running on a personal EC2 instance
+
 [Dag Running on Airflow Server](docs/event_dag.PNG)
 
 ## Task 2 - Data Model:
