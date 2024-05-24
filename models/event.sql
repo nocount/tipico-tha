@@ -1,4 +1,4 @@
--- models/event_data.sql
+-- models/event.sql
 
 {{ config(materialized='table') }}
 
@@ -16,4 +16,4 @@ SELECT
     eventTags,
     lastModifiedTime,
     eventMetadata
-FROM {{ source('source', 'api_data') }}
+FROM {{ ref('tipico_events_raw') }}
