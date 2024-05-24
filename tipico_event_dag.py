@@ -55,7 +55,7 @@ def call_and_store_api_data(**context):
         )
 
         # Write the DataFrame to S3 and then to redshift
-        pr.pandas_to_redshift(data_frame=df, redshift_table_name='dbt_wburchenal.tipico_events_raw_v4', index=False,
+        pr.pandas_to_redshift(data_frame=df, redshift_table_name='dbt_wburchenal.tipico_events_raw', index=False,
                               append=True)
 
         print(f"API data stored in Redshift successfully at {datetime.now()}")
