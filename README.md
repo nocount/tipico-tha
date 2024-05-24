@@ -1,5 +1,5 @@
 # tipico-tha
-Two part take home assignment for Tipico interview process
+Three part take home assignment for Tipico interview process
 
 # Project Description
 
@@ -8,6 +8,7 @@ Two part take home assignment for Tipico interview process
 The dag(tipico_event_dag.py) performs the api query and then writes to Redshift using the pandas_redshift library(pandas to_sql was also considered but I ran into some tricky engine issues connecting to my Redshift instance).  
 
 Dag can be edited with S3/Redshift credentials then put into the dags directory of a running airflow app then activated and it should run every 10 minutes and upload to the Redshift cluster.  
+[Serverless Redshift](docs/redshift_env.PNG)
 
 Tested on aiflow server running on a personal EC2 instance
 [Dag Running on Airflow Server](docs/event_dag.PNG)
@@ -19,14 +20,14 @@ Created a data model based on the extracted data from the api and is basically a
 Data Model Design  
     
 
-[UML Diagram](docs/tipico_event_model.png)
+[Class Diagram](docs/tipico_event_model.png)
 
 
-Description:
+### Design Description:
 
 Entities:
 
-Event:
+### Event:
 
 Attributes:  
 eventId: int  
@@ -51,7 +52,7 @@ Belongs to one Group (One-to-Many)
 Has many Participants (Many-to-Many) through the EventParticipant association table.  
 Has many Markets (One-to-Many)  
 
-Participant:
+### Participant:
 
 Attributes:
 participantId: int  
@@ -62,7 +63,7 @@ abbreviation: string
 Relationships:
 Participates in many Events (Many-to-Many) through the EventParticipant association table.
 
-Group:
+### Group:
 
 Attributes:
 groupId: int  
@@ -72,7 +73,7 @@ parentGroupId: int
 Relationships:
 Contains many Events (One-to-Many)
 
-Market:
+### Market:
 
 Attributes:
 marketId: int  
@@ -83,7 +84,7 @@ Relationships:
 Belongs to one Event (One-to-Many)
 Has many Outcomes (One-to-Many)
 
-Outcome:
+### Outcome:
 
 Attributes:
 outcomeId: int  
@@ -94,7 +95,7 @@ odds: float
 Relationships:
 Belongs to one Market (One-to-Many)
 
-Specifier:
+### Specifier:
 
 Attributes:
 eventId: int  
@@ -115,7 +116,7 @@ In the project I focused on the data models for the core Event, Group and Partic
 
 Since Redshift lacks a flatten or unnest type function the transformations for the group and participant models proved complex and I was not able to finish them completely with the time I allowed myself.
 
-
+[DBT env](docs/dbt_env.PNG)
 
 
 
